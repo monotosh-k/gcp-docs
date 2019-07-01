@@ -1,0 +1,26 @@
+{
+  "name": "scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "crawler": "^1.2.1",
+    "download": "^7.1.0",
+    "get-hrefs": "^4.0.0",
+    "html-pdf": "^2.2.0",
+    "html-pdf-chrome": "^0.5.0",
+    "pdf-merge": "^1.2.0",
+    "puppeteer": "^1.18.1",
+    "q": "^1.5.1",
+    "shelljs": "^0.8.3",
+    "underscore": "^1.9.1",
+    "website-scraper": "^4.0.1",
+    "yargs": "^13.2.4"
+  }
+}
