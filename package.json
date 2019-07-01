@@ -9,18 +9,15 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "arg": "^4.1.0",
+    "chalk": "^2.4.2",
     "cheerio": "^1.0.0-rc.3",
-    "crawler": "^1.2.1",
-    "download": "^7.1.0",
+    "esm": "^3.2.25",
     "get-hrefs": "^4.0.0",
-    "html-pdf": "^2.2.0",
-    "html-pdf-chrome": "^0.5.0",
+    "inquirer": "^6.4.1",
     "pdf-merge": "^1.2.0",
     "puppeteer": "^1.18.1",
     "q": "^1.5.1",
-    "shelljs": "^0.8.3",
-    "underscore": "^1.9.1",
-    "website-scraper": "^4.0.1",
-    "yargs": "^13.2.4"
+    "underscore": "^1.9.1"
   }
 }
