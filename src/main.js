@@ -32,7 +32,8 @@ function saveNavLinks(options) {
                                         'count': links.length
                                     };
                                     //console.log((products));
-                                    fs.readFile(__dirname + '/../products.json', 'utf8', (err, data) => {
+                                    const pathToOutputJson = __dirname + '/../output/products.json';
+                                    fs.readFile(pathToOutputJson, 'utf8', (err, data) => {
                                         if (err) {
                                             deferred.reject(err);
                                         }
@@ -49,7 +50,7 @@ function saveNavLinks(options) {
                                             jsonData.products.push(p);
                                         }
 
-                                        fs.writeFile(__dirname + '/../products.json', JSON.stringify(jsonData), (err) => {
+                                        fs.writeFile(pathToOutputJson, JSON.stringify(jsonData), (err) => {
                                             if (err) {
                                                 deferred.reject(err);
                                             } else {
