@@ -110,7 +110,7 @@ function downloadAndMergePdf(options, hrefs) {
                             timeout: 0,
                             waitUntil: "networkidle0"
                         })
-                        .then((res) => {
+                        .then(() => {
                             page.setCookie(...cookies).then(() => {
                                 page.pdf({
                                         path: pathToSave,
@@ -153,7 +153,7 @@ export async function downloadDocs(options) {
     console.log(options);
     saveNavLinks(options).then((product) => {
             //console.log(product);
-            downloadAndMergePdf(options, product.links);
+            // downloadAndMergePdf(options, product.links);
         })
         .catch((err) => {
             console.log(err);

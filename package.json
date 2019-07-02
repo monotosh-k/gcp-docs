@@ -1,12 +1,15 @@
 {
-  "name": "scrapper",
+  "name": "gcp-docs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main.js",
   "author": "",
   "license": "ISC",
   "scripts": {
     "start": "node app.js"
+  },
+  "bin": {
+    "gcp-docs": "bin/gcp-docs"
   },
   "dependencies": {
     "arg": "^4.1.0",
