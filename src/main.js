@@ -89,7 +89,7 @@ async function downloadAndMergePdf(options) {
 
         let pathToSave = `${options.pathToSave}/${options.product}/${indx}-${urlParts[urlParts.length - 1]}.pdf`;
 
-        files.push(path.join(__dirname, pathToSave));
+        files.push(pathToSave);
         indx++;
 
         const page = await browser.newPage();
@@ -108,7 +108,7 @@ async function downloadAndMergePdf(options) {
             await PDFMerge(files, {
                 output: path.join(options.pathToSave, options.fileName)
             });
-            console.log(chalk.green.bold('Done!!'));
+            console.log(`${chalk.green.bold('Done')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
             process.exit(1);
         }
     }
