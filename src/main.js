@@ -84,16 +84,38 @@ async function downloadAndMergePdf(options) {
     browser = await puppeteer.launch();
     let files = [],
         indx = 0;
+
+    let promises = [];
     for (const element of existing.links) {
         let urlParts = element.split("/");
-
         let pathToSave = `${options.pathToSave}/${options.product}/${indx}-${urlParts[urlParts.length - 1]}.pdf`;
-
-        files.push(pathToSave);
+        promises.push(downloadSingle(browser, element, pathToSave, options.language));
         indx++;
+    }
+
+    let results = await Promise.all(promises);
+    for (let result of results) {
+        files.push(result);
+    }
+
+    await PDFMerge(files, {
+        output: path.join(options.pathToSave, options.fileName)
+    });
+    console.log(`${chalk.green.bold('Done')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
+    browser.close();
+}
+
+async function downloadSingle(browser, url, pathToSave, language) {
+    try {
+        const cookies = [{
+            'name': 'devsite_tabbar_last',
+            'value': `code-sample:${language}`,
+            'domain': 'cloud.google.com',
+            'path': '/'
+        }];
 
         const page = await browser.newPage();
-        await page.goto(element, {
+        await page.goto(url, {
             timeout: 0,
             waitUntil: "networkidle0"
         });
@@ -103,16 +125,15 @@ async function downloadAndMergePdf(options) {
             format: 'Letter',
             scale: 0.8
         });
+
         await page.close();
-        if (indx === existing.links.length) {
-            await PDFMerge(files, {
-                output: path.join(options.pathToSave, options.fileName)
-            });
-            console.log(`${chalk.green.bold('Done')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
-            process.exit(1);
-        }
+        return pathToSave;
+    }
+    catch (err) {
+        console.log(err);
     }
 }
+
 
 
 export async function downloadDocs(options) {
