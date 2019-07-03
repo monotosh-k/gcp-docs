@@ -9,8 +9,8 @@ function parseArgumentsIntoOptions(rawArgs) {
         '-s': '--save',
         '--fileName': String,
         '-f': '--fileName',
-        '--code': String,
-        '-c': '--code',
+        '--language': String,
+        '-l': '--language',
         '--subProduct': String,
         '-u': '--subProduct'
     }, 
@@ -23,7 +23,7 @@ function parseArgumentsIntoOptions(rawArgs) {
         subProduct: args['--subProduct'] || '',
         pathToSave: args['--save'] ,
         fileName: args['--fileName'],
-        code: args['--code'] || 'C#'
+        language: args['--language']
     }
 }
 
@@ -63,9 +63,19 @@ async function promptForMissingOptions(options){
                 if(!fs.existsSync(input)){
                     return `Dir ${input} doesn't exist`
                 }
-
+                
                 return true;
             }
+        })
+    }
+
+    if(!options.language){
+        questions.push({
+            type: 'list',
+            name: 'language',
+            message: 'Select language for sample code',
+            choices: ['C#', 'Go', 'Java', 'Node.js', 'PHP', 'Python'],
+            default: 'C#'
         })
     }
 
@@ -76,7 +86,8 @@ async function promptForMissingOptions(options){
         product: product,
         subProduct: options.subProduct || answers.subProduct,
         fileName: options.fileName || `${product}.pdf`,
-        pathToSave: options.pathToSave || answers.pathToSave
+        pathToSave: options.pathToSave || answers.pathToSave,
+        language: options.language || answers.language
     }
 }
 
