@@ -9,6 +9,7 @@ import {
     promisify
 } from 'util';
 import chalk from 'chalk';
+import Listr from 'listr';
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -60,12 +61,6 @@ async function saveNavLinks(options) {
 
 async function downloadAndMergePdf(options) {
     let browser;
-    const cookies = [{
-        'name': 'devsite_tabbar_last',
-        'value': `code-sample:${options.language}`,
-        'domain': 'cloud.google.com',
-        'path': '/'
-    }];
     const pathToOutputJson = path.join(__dirname, '/../output/products.json');
     let data = await readFile(pathToOutputJson, 'utf8');
     let jsonData = JSON.parse(data);
@@ -128,8 +123,7 @@ async function downloadSingle(browser, url, pathToSave, language) {
 
         await page.close();
         return pathToSave;
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
     }
 }
@@ -137,11 +131,18 @@ async function downloadSingle(browser, url, pathToSave, language) {
 
 
 export async function downloadDocs(options) {
-    try {
-        await saveNavLinks(options);
-        await downloadAndMergePdf(options);
-    } catch (err) {
-        console.log(err.message);
-        process.exit(1);
-    }
+    const tasks = new Listr(
+        [{
+                title: `Get navigation links for ${options.product}`,
+                task: () => saveNavLinks(options)
+            },
+            {
+                title: 'Save page as pdf and merge',
+                task: () => downloadAndMergePdf(options),
+            }
+        ], {
+            exitOnError: true
+        });
+    await tasks.run();
+    return true;
 }
