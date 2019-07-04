@@ -9,7 +9,7 @@ import {
     promisify
 } from 'util';
 import chalk from 'chalk';
-import Listr from 'listr';
+// import Listr from 'listr';
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -102,19 +102,16 @@ async function downloadAndMergePdf(options) {
 
 async function downloadSingle(browser, url, pathToSave, language) {
     try {
-        const cookies = [{
-            'name': 'devsite_tabbar_last',
-            'value': `code-sample:${language}`,
-            'domain': 'cloud.google.com',
-            'path': '/'
-        }];
-
+        let lanSelectorId = language === "C#" ? language : language.toLowerCase();
         const page = await browser.newPage();
         await page.goto(url, {
             timeout: 0,
             waitUntil: "networkidle0"
-        });
-        await page.setCookie(...cookies);
+        });   
+        if(!page.$(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`)){
+            console.log(`Found ${lanSelectorId}`);
+            await page.click(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`);
+        }
         await page.pdf({
             path: pathToSave,
             format: 'Letter',
@@ -131,18 +128,20 @@ async function downloadSingle(browser, url, pathToSave, language) {
 
 
 export async function downloadDocs(options) {
-    const tasks = new Listr(
-        [{
-                title: `Get navigation links for ${options.product}`,
-                task: () => saveNavLinks(options)
-            },
-            {
-                title: 'Save page as pdf and merge',
-                task: () => downloadAndMergePdf(options),
-            }
-        ], {
-            exitOnError: true
-        });
-    await tasks.run();
+    await saveNavLinks(options);
+    await downloadAndMergePdf(options);
+    // const tasks = new Listr(
+    //     [{
+    //             title: `Get navigation links for ${options.product}`,
+    //             task: () => saveNavLinks(options)
+    //         },
+    //         {
+    //             title: 'Save page as pdf and merge',
+    //             task: () => downloadAndMergePdf(options),
+    //         }
+    //     ], {
+    //         exitOnError: true
+    //     });
+    // await tasks.run();
     return true;
 }
