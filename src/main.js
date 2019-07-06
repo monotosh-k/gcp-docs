@@ -4,7 +4,9 @@ import cheerio from 'cheerio';
 import _ from 'underscore';
 import getHrefs from 'get-hrefs';
 import path from 'path';
-import PDFMerge from 'pdf-merge';
+//import PDFMerge from 'pdf-merge';
+import hummus from 'hummus';
+import rimraf from 'rimraf';
 import {
     promisify
 } from 'util';
@@ -92,12 +94,23 @@ async function downloadAndMergePdf(options) {
     for (let result of results) {
         files.push(result);
     }
+    
+    // await PDFMerge(files, {
+    //     output: path.join(options.pathToSave, options.fileName)
+    // });
 
-    await PDFMerge(files, {
-        output: path.join(options.pathToSave, options.fileName)
+    let pdfwriter = hummus.createWriter(path.join(options.pathToSave, options.fileName));
+    files.forEach((file)=>{
+        pdfwriter.appendPDFPagesFromPDF(file);
     });
+    pdfwriter.end();
     console.log(`${chalk.green.bold('Done')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
+    
     browser.close();
+
+    rimraf(path.join(options.pathToSave, options.product), (err)=>{
+        if(err) console.log(err);
+    });
 }
 
 async function downloadSingle(browser, url, pathToSave, language) {
@@ -107,11 +120,13 @@ async function downloadSingle(browser, url, pathToSave, language) {
         await page.goto(url, {
             timeout: 0,
             waitUntil: "networkidle0"
-        });   
-        if(!page.$(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`)){
-            console.log(`Found ${lanSelectorId}`);
-            await page.click(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`);
-        }
+        }); 
+        // if(!page.$(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`)){
+        //     console.log(`Found ${lanSelectorId}`);
+        //     await page.click(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`);
+        // }
+        
+        
         await page.pdf({
             path: pathToSave,
             format: 'Letter',
