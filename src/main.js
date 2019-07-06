@@ -11,6 +11,7 @@ import {
     promisify
 } from 'util';
 import chalk from 'chalk';
+import {exec} from 'child_process';
 // import Listr from 'listr';
 
 const readFile = promisify(fs.readFile);
@@ -106,10 +107,17 @@ async function downloadAndMergePdf(options) {
     pdfwriter.end();
     console.log(`${chalk.green.bold('Done')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
     
-    browser.close();
+    await browser.close();
 
     rimraf(path.join(options.pathToSave, options.product), (err)=>{
         if(err) console.log(err);
+    });
+
+    exec(`open ${path.join(options.pathToSave, options.fileName)}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
     });
 }
 
