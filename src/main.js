@@ -40,7 +40,7 @@ async function saveNavLinks(options) {
         return o.indexOf('cloud.google.com') < 0 ||
             o.indexOf('ref') > 0;
     }));
-    console.log(`Found ${links.length} links`);
+    console.log(`${chalk.yellow.bold('INFO')} Found ${links.length} links`);
 
     product.links = links;
     product.count = links.length;
@@ -102,20 +102,23 @@ async function downloadAndMergePdf(options) {
 
     let pdfwriter = hummus.createWriter(path.join(options.pathToSave, options.fileName));
     files.forEach((file)=>{
-        pdfwriter.appendPDFPagesFromPDF(file);
+        if(fs.existsSync(file)){
+            pdfwriter.appendPDFPagesFromPDF(file);
+        }
     });
     pdfwriter.end();
-    console.log(`${chalk.green.bold('Done')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
+    console.log(`${chalk.green.bold('DONE')} Saved file at ${path.join(options.pathToSave, options.fileName)}`);
     
     await browser.close();
 
     rimraf(path.join(options.pathToSave, options.product), (err)=>{
-        if(err) console.log(err);
+        if(err) console.log(`${chalk.red.bold('ERROR')} ${err}`);
     });
 
-    exec(`open ${path.join(options.pathToSave, options.fileName)}`, (error, stdout, stderr) => {
+    const openFileCommand = process.platform === 'win32' ? '' : ' open';
+    exec(`${openFileCommand} ${path.join(options.pathToSave, options.fileName)}`, (error, stdout, stderr) => {
         if (error) {
-            console.error(`exec error: ${error}`);
+            // console.error(`exec error: ${error}`);
             return;
         }
     });
@@ -142,6 +145,7 @@ async function downloadSingle(browser, url, pathToSave, language) {
         });
 
         await page.close();
+        console.log(`${chalk.green.bold('DONE')} Saving ${chalk.cyan(url)}`);
         return pathToSave;
     } catch (err) {
         console.log(err);
