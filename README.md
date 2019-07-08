@@ -7,6 +7,9 @@ npm link
 ```
 
 ### Running gcp-docs
+
+![gcp-docs] (img/command.png)
+
 ```
 gcp-docs
 ? Enter name of GCP product pubsub
