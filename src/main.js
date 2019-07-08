@@ -93,12 +93,10 @@ async function downloadAndMergePdf(options) {
 
     let results = await Promise.all(promises);
     for (let result of results) {
-        files.push(result);
+        if(result){
+            files.push(result);
+        }
     }
-    
-    // await PDFMerge(files, {
-    //     output: path.join(options.pathToSave, options.fileName)
-    // });
 
     let pdfwriter = hummus.createWriter(path.join(options.pathToSave, options.fileName));
     files.forEach((file)=>{
@@ -136,7 +134,11 @@ async function downloadSingle(browser, url, pathToSave, language) {
         //     console.log(`Found ${lanSelectorId}`);
         //     await page.click(`h3.kd-tabbutton [kd-data-id="code-sample:${lanSelectorId}"]`);
         // }
-        
+        const cards = await page.$('#cloud-site .card .card-showcase');
+        if(cards){
+            console.log(`${chalk.yellow.bold('INFO')} Excluding ${url}`);
+            return;
+        }
         
         await page.pdf({
             path: pathToSave,
