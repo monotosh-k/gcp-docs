@@ -139,6 +139,16 @@ async function downloadSingle(browser, url, pathToSave, language) {
             console.log(`${chalk.yellow.bold('INFO')} Excluding ${url}`);
             return;
         }
+
+        const survey = await page.$('.survey.show');
+        if(survey){
+            await page.evaluate((sel) => {
+                let elements = document.querySelectorAll(sel);
+                for(var i=0; i< elements.length; i++){
+                    elements[i].parentNode.removeChild(elements[i]);
+                }
+            }, '.survey.show')
+        }
         
         await page.pdf({
             path: pathToSave,
