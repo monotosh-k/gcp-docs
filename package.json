@@ -24,7 +24,7 @@
     "puppeteer": "^1.18.1",
     "q": "^1.5.1",
     "rimraf": "^2.6.3",
-    "underscore": "^1.9.1",
+    "underscore": "^1.12.1",
     "util": "^0.12.0"
   }
 }
