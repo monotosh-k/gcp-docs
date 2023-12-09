@@ -1,7 +1,7 @@
 import arg from 'arg';
 import inquirer from 'inquirer';
 import fs from 'fs';
-import { downloadDocs } from './main'
+import { downloadDocs } from './main.js'
 
 function parseArgumentsIntoOptions(rawArgs) {
     const args = arg({
@@ -10,9 +10,7 @@ function parseArgumentsIntoOptions(rawArgs) {
         '--fileName': String,
         '-f': '--fileName',
         '--language': String,
-        '-l': '--language',
-        '--subProduct': String,
-        '-u': '--subProduct'
+        '-l': '--language'
     }, 
     {
         argv: rawArgs.slice(2)
@@ -20,7 +18,6 @@ function parseArgumentsIntoOptions(rawArgs) {
 
     return {
         product: args._[0],
-        subProduct: args['--subProduct'] || '',
         pathToSave: args['--save'] ,
         fileName: args['--fileName'],
         language: args['--language']
@@ -44,14 +41,6 @@ async function promptForMissingOptions(options){
                 return true;
             }
         });
-    }
-
-    if(!options.subProduct){
-        questions.push({
-            name: 'subProduct',
-            message: 'Enter name of sub-product(optional)',
-            default: ''
-        })
     }
 
     if(!options.pathToSave){
@@ -84,7 +73,6 @@ async function promptForMissingOptions(options){
     return{
         ...options,
         product: product,
-        subProduct: options.subProduct || answers.subProduct,
         fileName: options.fileName || `${product}.pdf`,
         pathToSave: options.pathToSave || answers.pathToSave,
         language: options.language || answers.language

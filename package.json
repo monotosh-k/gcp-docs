@@ -2,26 +2,24 @@
   "name": "gcp-docs",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
+  "type": "module",
+  "main": "src/cli.js",
   "author": "",
   "license": "ISC",
   "scripts": {
     "start": "gcp-docs"
   },
   "bin": {
-    "gcp-docs": "bin/gcp-docs"
+    "gcp-docs": "bin/gcp-docs.js"
   },
   "dependencies": {
     "arg": "^4.1.0",
     "chalk": "^2.4.2",
-    "cheerio": "^1.0.0-rc.3",
-    "esm": "^3.2.25",
-    "get-hrefs": "^4.0.0",
-    "hummus": "^1.0.104",
+    "hummus": "^1.0.116",
     "inquirer": "^6.4.1",
     "listr": "^0.14.3",
     "path": "^0.12.7",
-    "puppeteer": "^1.18.1",
+    "puppeteer": "^21.6.0",
     "q": "^1.5.1",
     "rimraf": "^2.6.3",
     "underscore": "^1.12.1",
