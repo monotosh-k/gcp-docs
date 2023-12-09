@@ -1,8 +1,6 @@
 import puppeteer from 'puppeteer';
 import fs from 'fs';
-import cheerio from 'cheerio';
 import _ from 'underscore';
-import getHrefs from 'get-hrefs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 //import PDFMerge from 'pdf-merge';
@@ -17,17 +15,18 @@ import {exec} from 'child_process';
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const puppeteer_options = {headless: "new", env: {LANGUAGE: "en-US"}}
 
 async function saveNavLinks(options) {
-    const url = `https://cloud.google.com/${options.product}/docs/${options.subProduct}`;
+    const url = `https://cloud.google.com/${options.product}/docs`;
     let browser;
     let product = {
         'name': options.product
     };
-    const dirname = path.dirname(fileURLToPath(import.meta.url));
     const pathToOutputJson = path.join(dirname, '/../output/products.json');
 
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch(puppeteer_options);
     const page = await browser.newPage();
     const response = await page.goto(url);
     if (!response.ok()) {
@@ -37,12 +36,16 @@ async function saveNavLinks(options) {
     const buffer = await response.buffer();
     const html = buffer.toString('utf8');
 
-    let $ = cheerio.load(html);
-    let links = _.uniq(_.reject(getHrefs($('ul.devsite-nav-expandable').html()), (o) => {
-        return o.indexOf('cloud.google.com') < 0 ||
-            o.indexOf('ref') > 0;
-    }));
+    const element = await page.$('[track-metadata-position="nav - guides"]');
+    const href = await page.evaluate(el => el.getAttribute('href'), element);
+    await page.goto(href);
+    console.log(`${chalk.gray.bold('DEBUG')} Navigated to ${href}`);
+
+    const all_hrefs = await page.$$eval('.devsite-mobile-nav-bottom a.devsite-nav-title', links => links.map(link => link.href));
+    const links = Array.from(new Set(all_hrefs.filter(href => href.includes(url))));
+
     console.log(`${chalk.yellow.bold('INFO')} Found ${links.length} links`);
+    console.log(links)
 
     product.links = links;
     product.count = links.length;
@@ -66,7 +69,7 @@ async function saveNavLinks(options) {
 
 async function downloadAndMergePdf(options) {
     let browser;
-    const pathToOutputJson = path.join(__dirname, '/../output/products.json');
+    const pathToOutputJson = path.join(dirname, '/../output/products.json');
     let data = await readFile(pathToOutputJson, 'utf8');
     let jsonData = JSON.parse(data);
     let existing = _.find(jsonData.products, (a) => {
@@ -81,7 +84,7 @@ async function downloadAndMergePdf(options) {
         fs.mkdirSync(`${options.pathToSave}/${options.product}`);
     }
 
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch(puppeteer_options);
     let files = [],
         indx = 0;
 
