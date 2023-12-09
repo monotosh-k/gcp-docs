@@ -4,6 +4,7 @@ import cheerio from 'cheerio';
 import _ from 'underscore';
 import getHrefs from 'get-hrefs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 //import PDFMerge from 'pdf-merge';
 import hummus from 'hummus';
 import rimraf from 'rimraf';
@@ -23,7 +24,8 @@ async function saveNavLinks(options) {
     let product = {
         'name': options.product
     };
-    const pathToOutputJson = path.join(__dirname, '/../output/products.json');
+    const dirname = path.dirname(fileURLToPath(import.meta.url));
+    const pathToOutputJson = path.join(dirname, '/../output/products.json');
 
     browser = await puppeteer.launch();
     const page = await browser.newPage();

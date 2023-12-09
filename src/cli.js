@@ -1,7 +1,7 @@
 import arg from 'arg';
 import inquirer from 'inquirer';
 import fs from 'fs';
-import { downloadDocs } from './main'
+import { downloadDocs } from './main.js'
 
 function parseArgumentsIntoOptions(rawArgs) {
     const args = arg({
